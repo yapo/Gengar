@@ -1,0 +1,20 @@
+{
+  "name": "gengar",
+  "version": "0.0.0",
+  "description": "Regression testing with Selenium and ImageMagick",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.schibsted.io:adrian/Gengar.git"
+  },
+  "keywords": [
+    "selenium",
+    "imagemagick",
+    "testing",
+    "regression"
+  ],
+  "author": "Adrian Salgado adrian@schibsted.cl",
+  "devDependencies": {
+    "selenium-webdriver": "^2.53.3"
+  }
+}
