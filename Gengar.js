@@ -1,5 +1,7 @@
 
-var Gengar = (function() {
+const Gengar = (function() {
+	'use strict';
+
 	/* Inner Global Vars */
 	const fs = require('fs');
 	const webdriver = require('selenium-webdriver');
@@ -8,17 +10,15 @@ var Gengar = (function() {
 
 	/* Private */
 	function saveScreenshot(id, data) {
-		var base64Data = data.replace(/^data:image\/png;base64,/,'');
+		let base64Data = data.replace(/^data:image\/png;base64,/,'');
 
-		fs.writeFile(id + '.png', base64Data, 'base64', function(err) {
-			if (err) {
-				console.log('err: ', err);
-			}
+		fs.writeFile(id + '.png', base64Data, 'base64', (err) => {
+			err ? console.log('err: ', err) : true;
 		});
 	}
 	
 	/* Public */
-	var Gengar = function() {
+	let Gengar = function() {
 		this.driver = new webdriver.Builder().forBrowser('firefox').build();
 	};
 
