@@ -9,20 +9,21 @@ With Selenium installed, make it run with:
 
 	java -jar selenium-server-standalone-2.45.0.jar
 
-And then run your tests.
+And then run your tests with:
+
+	node runner.js
 
 
-## File Structure/Architecture
-	
+## File Structure/Architecture	
 
 	tests/viewName/
 		-> viewName.view.js
 		-> componentName.component.js
 
 	images/viewName/
-		-> viewName.[base/diff/current].png
-		-> componentName/
-			-> componentName.[base/diff/current].png
+		-> viewName.stateName.[base/diff/current].png
+		-> componentName.stateName.[base/diff/current].png
+		-> componentName.stateName.diff
 
 ## Current Test Structure [wip]
 
@@ -32,20 +33,15 @@ And then run your tests.
 		});
 	});
 
-## Action List
+*State will automatically take a screenshot of the whole page if not specified.
 
-	goTo(url)
-	getElementById(id)
-	getElementByClassName(className)
-	takeScreenshot(screenshotName)
-	waitUntilTitleIs(title)
-	hover(element)
-
-	exit();
-
-Todo:
+###Todo:
 	
-	* Improve this readme
-	* Add image diffing with ImageMagick
-	* Add a web interface/viewer to see and manage differences
+	* [x] Add image diffing with ImageMagick
+	* [ ] Add a web interface/viewer to see and manage differences
+	* [ ] Write some nice documentation.
+	* [ ] Improve this readme
+	* [ ] Make everything installable through npm or some other package manager
+	* [ ] Allow for different language "interfaces" (Ruby, Go, Python, whatever)
+
 
