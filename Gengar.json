@@ -1,4 +1,6 @@
 {
-	"PATH": "http://tuhermana.schibsted.cl:22008/"
+	"PATH": "http://tuhermana.schibsted.cl:22008/",
+	"PHPPATH": "http://tuhermana.schibsted.cl:22004/",
+	"SECUREPATH": "https://tuhermana.schibsted.cl:22011/"
 }
 

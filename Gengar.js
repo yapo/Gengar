@@ -5,13 +5,19 @@ const Gengar = (() => {
   /* Inner Global Vars */
   const fs = require('fs');
   const webdriver = require('selenium-webdriver');
+  const exec = require('child_process').exec;
   const By = webdriver.By;
   const until = webdriver.until;
 
-  const PATH = JSON.parse(fs.readFileSync('gengar.json'))['PATH'];
+  const config = JSON.parse(fs.readFileSync('gengar.json'));
+
+  const PATH = config['PATH'];
+  const PHPPATH = config['PHPPATH'];
+  const SECUREPATH = config['SECUREPATH'];
 
   /* Private */
-  function saveScreenshot(id, data) {
+  function saveScreenshot(id, data,  cropInfo) {
+    let imageDir;
     let base64Data = data.replace(/^data:image\/png;base64,/,'');
     let suffix = '.base';
     let images = fs.readdirSync('images/');
@@ -19,30 +25,39 @@ const Gengar = (() => {
     // Find if there's already an image to compare to
     let already = images.find(function(elm) {
       if (elm === id + '.base.png') {
-        suffix = '.diff';
+        suffix = '.new';
         return true;
       }
     }) || false;
 
     if (already) {
-      // console.log('hola');
+      // console.log('base exists');
     } else {
-      // console.log('chao');
+      // console.log('base doesnt exist');
     }
 
-    fs.writeFile('images/' + id + suffix + '.png', base64Data, 'base64', (err) => {
+    imageDir = 'images/' + id + suffix + '.png';
+
+    fs.writeFile(imageDir, base64Data, 'base64', (err) => {
+      if (cropInfo) {
+        exec(`convert ${imageDir} -crop ${cropInfo.width}x${cropInfo.height}+${cropInfo.x}+${cropInfo.y} ${imageDir}`);
+      }
+
       if (err) {
-        // console.log('err: ', err)
-      } else {
-        // console.log('id: ', id);
+        console.log('Writing Error: ', err);
       }
     });
   }
-
+  
+  // Run the state and generate a screenshot.
   function state(id, callback) {
+    let currentId = this.id.toLowerCase() + '.' + id.toLowerCase();
+
     if (typeof callback === 'function') {
       callback();
-      this.takeScreenshot(this.id.toLowerCase() + '.' + id.toLowerCase());
+      if (String(callback).indexOf('takeScreenshot') === -1) {
+        this.takeScreenshot(currentId);
+      }
     } else {
       console.log('No callback found, provide one or nothing will work.');
     }
@@ -73,6 +88,14 @@ const Gengar = (() => {
     this.driver.get(PATH + url);
   }
 
+  Gengar.prototype.goToPHP = function(url) {
+    this.driver.get(PHPPATH + url);
+  }
+
+  Gengar.prototype.goToSecure = function(url) {
+    this.driver.get(SECUREPATH + url);
+  }
+
   Gengar.prototype.getElementById = function(id) {
     // console.log('getElementById: ', id);
     return this.driver.findElement(By.id(id));
@@ -83,11 +106,36 @@ const Gengar = (() => {
     return this.driver.findElement(By.className(className));
   }
 
-  Gengar.prototype.takeScreenshot = function(id) {
-    // console.log('takeScreenshot: ', id);
+  Gengar.prototype.getElementByTagName = function(tagName) {
+    // console.log('getElementByTagName: ', tagName);
+    return this.driver.findElement(By.tagName(tagName));
+  }
+
+  Gengar.prototype.getElementByCSS = function(query) {
+    // console.log('getElementByCSS: ', query);
+    return this.driver.findElement(By.css(query));
+  }
+
+  Gengar.prototype.takeScreenshot = function(id, element) {
+    // console.log('takeScreenshot: ', id, element);
+    let cropInfo;
+
+    if (element) {
+      element.getSize().then(function(size) {
+        cropInfo = size;
+      });
+    }
+    //
+
+
     this.driver.takeScreenshot().then(function(data) {
-      saveScreenshot(id, data);
+      saveScreenshot(id, data, cropInfo);
     });
+  }
+
+  Gengar.prototype.wait = function(time) {
+    // console.log('wait: ', time);
+    this.driver.sleep(time);
   }
 
   Gengar.prototype.waitUntilTitleIs = function(title) {
