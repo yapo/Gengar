@@ -14,7 +14,8 @@
     "regression"
   ],
   "author": "Adrian Salgado adrian@schibsted.cl",
-  "devDependencies": {
+  "dependencies": {
+    "express": "^4.14.0",
     "selenium-webdriver": "^2.53.3"
   }
 }

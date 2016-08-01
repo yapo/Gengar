@@ -87,6 +87,7 @@
       composite = `images/${split[0]}.${split[1]}`;
 
       exec(`compare ${composite}.base.png ${composite}.new.png ${composite}.diff.png`);
+      
       exec(`compare -metric RMSE ${composite}.base.png ${composite}.new.png NULL:`, function(error, stdout, stderr) {
         console.log('stderr: ', stderr);
       });

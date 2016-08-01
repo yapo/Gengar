@@ -1,27 +1,14 @@
-var Gengar = require('../../Gengar');
 
-function login(g) {
-  'use strict';
+const Gengar = require('../../Gengar');
+const Helpers = require('../../Helpers');
 
-  g.goToSecure('login');
-  
-  // Fill form
-  let email = g.getElementById('email_input');
-  email.sendKeys('prepaid5@blocket.se');
-  
-  let password = g.getElementById('password_input');
-  password.sendKeys('123123');
-  
-  // Submit form
-  password.submit();
-}
+const login = Helpers.login;
+const logout = Helpers.logout;
 
 new Gengar('aiUpselling', (g, state) => {
   'use strict';
 
-  state('default', () => {
-    login(g);
-
+  function steps() {
     g.goToPHP('/ai');
     
     // Choose the others category
@@ -32,9 +19,29 @@ new Gengar('aiUpselling', (g, state) => {
     
     // The upselling animation takes at least 500ms
     g.wait(500);
+  }
+
+  state('default', () => {
+    login(g);
+    steps();
 
     let aiUpselling = g.getElementByClassName('aiUpselling');
     g.takeScreenshot('aiUpselling.default', aiUpselling);
+
+    logout(g);
+  });
+
+  state('expanded', () => {
+    login(g);
+    steps();
+
+    g.getElementById('standard').click();
+    g.wait(500);
+
+    let aiUpselling = g.getElementByClassName('aiUpselling');
+    g.takeScreenshot('aiUpselling.expanded', aiUpselling);
+
+    logout(g);
   });
 });
 

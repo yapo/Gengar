@@ -1,5 +1,5 @@
 
-const Gengar = (() => {
+module.exports = Gengar = (() => {
   'use strict';
 
   /* Inner Global Vars */
@@ -30,12 +30,6 @@ const Gengar = (() => {
       }
     }) || false;
 
-    if (already) {
-      // console.log('base exists');
-    } else {
-      // console.log('base doesnt exist');
-    }
-
     imageDir = 'images/' + id + suffix + '.png';
 
     fs.writeFile(imageDir, base64Data, 'base64', (err) => {
@@ -63,8 +57,10 @@ const Gengar = (() => {
     }
   }
 
-  /* Public */
-  /*
+  /* -----------
+   *   Public 
+   * -----------
+   *
    * Initial constructor which sets the current driver.
    *
    * @TODO: 
@@ -74,11 +70,11 @@ const Gengar = (() => {
   function Gengar(id, callback) {
     this.id = id;
     this.driver = new webdriver.Builder().forBrowser('firefox').build();
- 
+
     if (typeof callback === 'function') {
       callback(this, state.bind(this));
     } else {
-      // console.log('No function, what do you expect me to run?');
+      console.log('No function received, what do you expect me to run?');
     }
   };
 
@@ -125,8 +121,6 @@ const Gengar = (() => {
         cropInfo = size;
       });
     }
-    //
-
 
     this.driver.takeScreenshot().then(function(data) {
       saveScreenshot(id, data, cropInfo);
@@ -158,6 +152,4 @@ const Gengar = (() => {
 
   return Gengar;
 })();
-
-module.exports = Gengar;
 
