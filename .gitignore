@@ -2,7 +2,7 @@
 .DS_Store
 node_modules
 bin/
-images/
+viewer/public/images/
 tests/
 .log
 Gengar.json

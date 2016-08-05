@@ -4,7 +4,11 @@
   /* Globals */
   const fs = require('fs');
   const exec = require('child_process').exec;
-  const IMAGESPATH = 'viewer/public/images/';
+
+  const config = JSON.parse(fs.readFileSync('gengar.json'));
+  
+  const TESTSPATH = config['TESTSPATH'];
+  const IMAGESPATH = config['IMAGESPATH'];
 
   let doneTests = 0;
 
@@ -43,14 +47,16 @@
 
     let allTests = [];
 
-    const tests = fs.readdirSync('tests');
+    const tests = fs.readdirSync(TESTSPATH);
 
     tests.forEach(function(dir, index, list) {
       try {
-        testDir = fs.readdirSync('tests/' + dir);
+        testDir = fs.readdirSync(TESTSPATH + dir);
         testDir.forEach(function(test) {
-          currentTest = 'tests/' + dir + '/' + test;
+          currentTest = TESTSPATH + dir + '/' + test;
+
           console.log('currentTest: ', currentTest);
+
           allTests.push(runTest(currentTest));
         });
       } catch(e) {
@@ -104,7 +110,7 @@
 
   (function init()  {
     createDir(IMAGESPATH);
-    createDir('tests');
+    createDir(TESTSPATH);
 
     runAllTests();
   })();

@@ -12,15 +12,14 @@ module.exports = Gengar = (() => {
   const config = JSON.parse(fs.readFileSync('gengar.json'));
 
   const PATH = config['PATH'];
-  const PHPPATH = config['PHPPATH'];
-  const SECUREPATH = config['SECUREPATH'];
-  const IMAGEPATH = config['IMAGEPATH']
+  const IMAGEPATH = config['IMAGEPATH'];
 
   /* Private */
   function saveScreenshot(id, data,  cropInfo) {
-    let imageDir;
+    let imagePath;
     let base64Data = data.replace(/^data:image\/png;base64,/,'');
     let suffix = '.base';
+    console.log('IMAGEPATH: ', IMAGEPATH);
     let images = fs.readdirSync(IMAGEPATH);
 
     // Find if there's already an image to compare to
@@ -31,11 +30,11 @@ module.exports = Gengar = (() => {
       }
     }) || false;
 
-    imageDir = `${IMAGEPATH}${id}${suffix}.png`;
+    imagePath = `${IMAGEPATH}${id}${suffix}.png`;
 
-    fs.writeFile(imageDir, base64Data, 'base64', (err) => {
+    fs.writeFile(imagePath, base64Data, 'base64', (err) => {
       if (cropInfo) {
-        exec(`convert ${imageDir} -crop ${cropInfo.width}x${cropInfo.height}+${cropInfo.x}+${cropInfo.y} ${imageDir}`);
+        exec(`convert ${imagePath} -crop ${cropInfo.width}x${cropInfo.height}+${cropInfo.x}+${cropInfo.y} ${imagePath}`);
       }
 
       if (err) {
@@ -83,14 +82,6 @@ module.exports = Gengar = (() => {
     // console.log('goTo: ', PATH + url);
     url = url || '';
     this.driver.get(PATH + url);
-  }
-
-  Gengar.prototype.goToPHP = function(url) {
-    this.driver.get(PHPPATH + url);
-  }
-
-  Gengar.prototype.goToSecure = function(url) {
-    this.driver.get(SECUREPATH + url);
   }
 
   Gengar.prototype.getElementById = function(id) {
