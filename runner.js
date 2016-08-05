@@ -4,6 +4,7 @@
   /* Globals */
   const fs = require('fs');
   const exec = require('child_process').exec;
+  const IMAGESPATH = 'viewer/public/images/';
 
   let doneTests = 0;
 
@@ -11,7 +12,6 @@
    * If images/ dir doesnt exist, create it.
    **/
   function createDir(dirName) {
-    // console.log('imagesDir');
     try {
       fs.readdirSync(dirName);
     } catch(e) {
@@ -78,24 +78,32 @@
   function generateDiffs() {
     console.log('generateDiffs');
 
+    let diff;
     let split;
     let composite;
-    let images = fs.readdirSync('images');
+    let images = fs.readdirSync(IMAGESPATH);
 
     images.forEach(function(curr) {
       split = curr.split('.');
-      composite = `images/${split[0]}.${split[1]}`;
+      composite = `${IMAGESPATH}${split[0]}.${split[1]}`;
 
       exec(`compare ${composite}.base.png ${composite}.new.png ${composite}.diff.png`);
-      
+
       exec(`compare -metric RMSE ${composite}.base.png ${composite}.new.png NULL:`, function(error, stdout, stderr) {
-        console.log('stderr: ', stderr);
+        console.log('stderr: ', stderr.split('(')[1].replace(')', ''));
+        diff = parseInt(stderr.split('(')[1].replace(')', ''));
+
+        if (diff > 0) {
+          console.log('composite: ', composite);
+          console.log('diff: ', diff);
+          fs.writeFileSync(`${composite}.json`, `{passed: ${diff}}`);
+        }
       });
     });
   }
 
   (function init()  {
-    createDir('images');
+    createDir(IMAGESPATH);
     createDir('tests');
 
     runAllTests();

@@ -1,34 +1,23 @@
+'use strict';
 
 const fs = require('fs');
 const router = require('express').Router();
 
+const getTests = require('../helpers/getTests');
+const replaceBase = require('../helpers/replaceBase');
+
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  'use strict';
+  res.render('index');
+});
 
-  let tests;
-  let testDirs = {};
-  let dirs = fs.readdirSync('../tests');
-  let images = fs.readdirSync('../images');
+router.get('/data', (req, res) => {
+  res.send(getTests());
+});
 
-  console.log('images: ', images);
-
-  dirs.forEach(function(elems, index, total) {
-    try {
-      tests = fs.readdirSync(`../tests/${elems}`);
-      testDirs[elems] = tests;
-    } catch(e) {
-      console.log('Error searching for tests: ', e);
-    }
-  });
-
-  console.log('testDirs: ', testDirs);
-
-  res.render('index', {
-    title: 'Gengar Viewer',
-    testDirs: testDirs
-  });
-
+router.get('/setBase/:image', (req, res) => {
+  let what = replaceBase(req.params.image);
+  res.send(what);
 });
 
 module.exports = router;

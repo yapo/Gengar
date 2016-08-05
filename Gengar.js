@@ -14,13 +14,14 @@ module.exports = Gengar = (() => {
   const PATH = config['PATH'];
   const PHPPATH = config['PHPPATH'];
   const SECUREPATH = config['SECUREPATH'];
+  const IMAGEPATH = config['IMAGEPATH']
 
   /* Private */
   function saveScreenshot(id, data,  cropInfo) {
     let imageDir;
     let base64Data = data.replace(/^data:image\/png;base64,/,'');
     let suffix = '.base';
-    let images = fs.readdirSync('images/');
+    let images = fs.readdirSync(IMAGEPATH);
 
     // Find if there's already an image to compare to
     let already = images.find(function(elm) {
@@ -30,7 +31,7 @@ module.exports = Gengar = (() => {
       }
     }) || false;
 
-    imageDir = 'images/' + id + suffix + '.png';
+    imageDir = `${IMAGEPATH}${id}${suffix}.png`;
 
     fs.writeFile(imageDir, base64Data, 'base64', (err) => {
       if (cropInfo) {
@@ -123,7 +124,7 @@ module.exports = Gengar = (() => {
     }
 
     this.driver.takeScreenshot().then(function(data) {
-      saveScreenshot(id, data, cropInfo);
+      saveScreenshot(id.toLowerCase(), data, cropInfo);
     });
   }
 

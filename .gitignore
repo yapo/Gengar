@@ -3,5 +3,6 @@
 node_modules
 bin/
 images/
+tests/
 .log
 

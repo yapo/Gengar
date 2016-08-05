@@ -27,14 +27,9 @@ new Gengar('aiUpselling', (g, state) => {
 
     let aiUpselling = g.getElementByClassName('aiUpselling');
     g.takeScreenshot('aiUpselling.default', aiUpselling);
-
-    logout(g);
   });
 
   state('expanded', () => {
-    login(g);
-    steps();
-
     g.getElementById('standard').click();
     g.wait(500);
 

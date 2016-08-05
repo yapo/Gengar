@@ -1,16 +1,3 @@
-extends layout
 
-block content
-  h1= title
-  p Welcome to #{title}
-
-  ul
-    - each tests, dir in testDirs
-      li
-        h1=dir
-        ul
-          - each test in tests
-            li=test
-
-
+include index.html
 

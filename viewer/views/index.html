@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Gengar . Viewer</title>
+        <link rel='stylesheet' href='/stylesheets/style.css'/>
+    </head>
+    <body class="body">
+        <h1>Gengar Viewer</h1>
+
+        <div id="app">
+            <ul class="list">
+                <li v-for="(what, why) in list">
+                    {{why.testName}}
+                    <ul>
+                        <li v-for="butt in why.states" v-on:click="showImages(butt, what)">
+                            {{butt}}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="viewer">
+                <div class="screenshotContainer">
+                    <h3>Base</h3>
+                    <img src="{{base}}" class="screenshot __base">
+                </div>
+
+                <div class="screenshotContainer __right">
+                    <h3>
+                        New
+                        <button v-on:click="changeBase(new)">Set as Base</button>
+                    </h3>
+                    <img src="{{new}}" class="screenshot">
+                </div>
+
+                <div class="screenshotContainer __right">
+                    <h3>Difference</h3>
+                    <img src="{{diff}}" class="screenshot">
+                </div>
+            </div>
+        </div>
+
+        <script src="/javascripts/vue.min.js"></script>
+        <script src="/javascripts/ajax.js"></script>
+        <script src="/javascripts/index.js"></script>
+    </body>
+</html>
+
