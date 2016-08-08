@@ -13,6 +13,9 @@
     "regression"
   ],
   "author": "Adrian Salgado adrian@schibsted.cl",
+  "bin": {
+  	"gengar": "./runner.js"
+  },
   "dependencies": {
     "express": "^4.14.0",
     "selenium-webdriver": "^2.53.3"

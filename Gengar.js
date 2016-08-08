@@ -11,15 +11,14 @@ module.exports = Gengar = (() => {
 
   const config = JSON.parse(fs.readFileSync('gengar.json'));
 
-  const PATH = config['PATH'];
-  const IMAGEPATH = config['IMAGEPATH'];
+  const PATH = config['basePath'];
+  const IMAGEPATH = config['imagesPath'];
 
   /* Private */
   function saveScreenshot(id, data,  cropInfo) {
     let imagePath;
     let base64Data = data.replace(/^data:image\/png;base64,/,'');
     let suffix = '.base';
-    console.log('IMAGEPATH: ', IMAGEPATH);
     let images = fs.readdirSync(IMAGEPATH);
 
     // Find if there's already an image to compare to
@@ -79,8 +78,8 @@ module.exports = Gengar = (() => {
   };
 
   Gengar.prototype.goTo = function(url) {
-    // console.log('goTo: ', PATH + url);
     url = url || '';
+
     this.driver.get(PATH + url);
   }
 

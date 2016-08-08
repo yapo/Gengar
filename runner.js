@@ -1,37 +1,50 @@
+#!/usr/bin/env node
+
 (() => {
   'use strict';
 
   /* Globals */
   const fs = require('fs');
   const exec = require('child_process').exec;
-
-  const config = JSON.parse(fs.readFileSync('gengar.json'));
-  
-  const TESTSPATH = config['TESTSPATH'];
-  const IMAGESPATH = config['IMAGESPATH'];
+  const noConfig = 'No Gengar.json found. Can\'t run Gengar without it so ... bye!';
 
   let doneTests = 0;
 
-  /**
-   * If images/ dir doesnt exist, create it.
-   **/
-  function createDir(dirName) {
-    try {
-      fs.readdirSync(dirName);
-    } catch(e) {
-      fs.mkdirSync(dirName);
+  function validateConfig() {
+    let config = false;
+
+    process.argv.forEach((elm) => {
+      if (elm.indexOf('configPath') > -1) {
+        let jsonPath = elm.replace('--configPath=','');
+
+        try {
+          config = JSON.parse(fs.readFileSync(jsonPath));
+        } catch (e) {
+          console.log('process.argv.forEach: ', e);
+        }
+      }
+    });
+
+    if (!config) {
+      try {
+        config = JSON.parse(fs.readFileSync('./Gengar.json'));
+      } catch(e) {
+        console.log('!config: ', e);
+      }
     }
+
+    return config;
   }
 
   /**
    * Run one test.
    **/
   function runTest(test) {
-    console.log('runTest: ', test);
+    console.log('running: ', test);
     exec('time node ' + test, function(error, stdout, stderr) {
-      console.log('error: ', error);
-      console.log('stdout: ', stdout);
-      console.log('stderr: ', stderr);
+      //console.log('error: ', error);
+      //console.log('stdout: ', stdout);
+      //console.log('stderr: ', stderr);
 
       doneTests++;
     });
@@ -40,13 +53,14 @@
   /**
    * Find all test files and run them.
    **/
-  function runAllTests() {
+  function runAllTests(config) {
     // console.log('runAllTests');
     let testDir;
     let currentTest;
 
     let allTests = [];
 
+    const TESTSPATH = config['testsPath'];
     const tests = fs.readdirSync(TESTSPATH);
 
     tests.forEach(function(dir, index, list) {
@@ -55,64 +69,79 @@
         testDir.forEach(function(test) {
           currentTest = TESTSPATH + dir + '/' + test;
 
-          console.log('currentTest: ', currentTest);
+          //console.log('currentTest: ', currentTest);
 
           allTests.push(runTest(currentTest));
         });
       } catch(e) {
-        console.log('runAllTests error: ', e);
+        //console.log('runAllTests error: ', e);
       }
     });
 
-    checkTests(allTests);
+    checkTests(allTests, config);
   }
 
-  function checkTests(tests) {
-    console.log('doneTests: ', doneTests);
-    console.log('tests.length: ', tests.length);
+  function checkTests(tests, config) {
+    //console.log('doneTests: ', doneTests);
+    //console.log('tests.length: ', tests.length);
 
     if (doneTests === tests.length) {
       console.log('all done, generate diffs');
-      generateDiffs();
+      generateDiffs(config);
     } else {
       setTimeout(function() {
-        checkTests(tests)
+        checkTests(tests, config)
       }, 5000);
     }
   }
 
-  function generateDiffs() {
+  function generateDiffs(config) {
     console.log('generateDiffs');
 
-    let diff;
     let split;
     let composite;
-    let images = fs.readdirSync(IMAGESPATH);
+
+    let diff = 0;
+
+    const IMAGESPATH = config['imagesPath'];
+    const images = fs.readdirSync(IMAGESPATH);
 
     images.forEach(function(curr) {
       split = curr.split('.');
+
       composite = `${IMAGESPATH}${split[0]}.${split[1]}`;
 
       exec(`compare ${composite}.base.png ${composite}.new.png ${composite}.diff.png`);
 
       exec(`compare -metric RMSE ${composite}.base.png ${composite}.new.png NULL:`, function(error, stdout, stderr) {
-        console.log('stderr: ', stderr.split('(')[1].replace(')', ''));
-        diff = parseInt(stderr.split('(')[1].replace(')', ''));
+        if (stderr.split('(').length > 1) {
+          diff = parseInt(stderr.split('(')[1].replace(')', ''));
+        } else if (stderr.indexOf('differ') > -1) {
+          console.log(`Width and height of ${curr} differ, so no diff can be made.`);
+        }
 
         if (diff > 0) {
-          console.log('composite: ', composite);
-          console.log('diff: ', diff);
           fs.writeFileSync(`${composite}.json`, `{passed: ${diff}}`);
         }
       });
     });
+
+    startViewer();
+  }
+
+  function startViewer() {
+    process.chdir('viewer/');
+    require('child_process').exec('npm start &');
   }
 
   (function init()  {
-    createDir(IMAGESPATH);
-    createDir(TESTSPATH);
+    const config = validateConfig();
 
-    runAllTests();
+    if (config) {
+      runAllTests(config);
+    } else {
+      console.log(noConfig);
+    }
   })();
 })();
 
