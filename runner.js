@@ -5,32 +5,37 @@
 
   /* Globals */
   const fs = require('fs');
+  const chalk = require('chalk');
   const exec = require('child_process').exec;
-  const noConfig = 'No Gengar.json found. Can\'t run Gengar without it so ... bye!';
+
+  const noConfig = chalk.red('No Gengar.json found. Can\'t run Gengar without it so ... bye!');
+  const noTestsPath = chalk.red('No testsPath found on Gengar.json.');
+  const noImagesPath = chalk.red('No imagesPath found on Gengar.json.');
 
   let doneTests = 0;
 
-  function validateConfig() {
-    let config = false;
-
-    process.argv.forEach((elm) => {
-      if (elm.indexOf('configPath') > -1) {
-        let jsonPath = elm.replace('--configPath=','');
-
-        try {
-          config = JSON.parse(fs.readFileSync(jsonPath));
-        } catch (e) {
-          console.log('process.argv.forEach: ', e);
-        }
+  function checkConfigPath() {
+    process.argv.forEach((opt) => {
+      if (opt.indexOf('configPath') > -1) {
+        return fs.readFileSync(opt.split('=') + '/Gengar.json');
       }
     });
 
-    if (!config) {
-      try {
+    return false;
+  }
+
+  function validateConfig() {
+    let config = false;
+    let isItHere = fs.readdirSync('.').indexOf('Gengar.json') > -1;
+
+    try {
+      if (isItHere) {
         config = JSON.parse(fs.readFileSync('./Gengar.json'));
-      } catch(e) {
-        console.log('!config: ', e);
+      } else {
+        config = checkConfigPath();
       }
+    } catch(e) {
+      console.log(chalk.red('Failed finding Gengar.json because: ', e));
     }
 
     return config;
@@ -40,11 +45,19 @@
    * Run one test.
    **/
   function runTest(test) {
-    console.log('running: ', test);
-    exec('time node ' + test, function(error, stdout, stderr) {
-      //console.log('error: ', error);
-      //console.log('stdout: ', stdout);
-      //console.log('stderr: ', stderr);
+    console.log('Executing ~> ', test);
+    exec('node ' + test, function(error, stdout, stderr) {
+      if (error) {
+        console.log(chalk.red(`Error executing ${test} => ${error}`));
+      }
+
+      if (stdout) {
+        console.log(chalk.yellow(`Stdout received from ${test} => ${stdout}`));
+      }
+
+      if (stderr) {
+        console.log(chalk.red(`Stderr received from ${test} => ${stderr}`));
+      }
 
       doneTests++;
     });
@@ -54,14 +67,20 @@
    * Find all test files and run them.
    **/
   function runAllTests(config) {
-    // console.log('runAllTests');
+    let tests;
     let testDir;
     let currentTest;
 
     let allTests = [];
 
     const TESTSPATH = config['testsPath'];
-    const tests = fs.readdirSync(TESTSPATH);
+
+    try {
+      tests = fs.readdirSync(TESTSPATH);
+    } catch(e) {
+      console.log(chalk.red('Cant read TESTSPATH because: ', e));
+      return false;
+    }
 
     tests.forEach(function(dir, index, list) {
       try {
@@ -69,12 +88,10 @@
         testDir.forEach(function(test) {
           currentTest = TESTSPATH + dir + '/' + test;
 
-          //console.log('currentTest: ', currentTest);
-
           allTests.push(runTest(currentTest));
         });
       } catch(e) {
-        //console.log('runAllTests error: ', e);
+        console.log(chalk.red('Had problems running some tests because: ', e));
       }
     });
 
@@ -82,11 +99,14 @@
   }
 
   function checkTests(tests, config) {
-    //console.log('doneTests: ', doneTests);
-    //console.log('tests.length: ', tests.length);
+    console.log(chalk.green(`Waiting on ${tests.length - doneTests} tests`));
+
+    /*
+    console.log('doneTests: ', doneTests);
+    console.log('tests.length: ', tests.length);
+    */
 
     if (doneTests === tests.length) {
-      console.log('all done, generate diffs');
       generateDiffs(config);
     } else {
       setTimeout(function() {
@@ -96,15 +116,21 @@
   }
 
   function generateDiffs(config) {
-    console.log('generateDiffs');
+    console.log(chalk.green('Generating diffs...'));
 
     let split;
+    let images;
     let composite;
 
     let diff = 0;
 
     const IMAGESPATH = config['imagesPath'];
-    const images = fs.readdirSync(IMAGESPATH);
+
+    try {
+      images = fs.readdirSync(IMAGESPATH);
+    } catch(e) {
+      console.log(chalk.red(noImagesPath));
+    }
 
     images.forEach(function(curr) {
       split = curr.split('.');
@@ -114,10 +140,11 @@
       exec(`compare ${composite}.base.png ${composite}.new.png ${composite}.diff.png`);
 
       exec(`compare -metric RMSE ${composite}.base.png ${composite}.new.png NULL:`, function(error, stdout, stderr) {
+
         if (stderr.split('(').length > 1) {
           diff = parseInt(stderr.split('(')[1].replace(')', ''));
         } else if (stderr.indexOf('differ') > -1) {
-          console.log(`Width and height of ${curr} differ, so no diff can be made.`);
+          console.log(chalk.red(`Width and height of ${curr} differ, so no diff can be made.`));
         }
 
         if (diff > 0) {
@@ -130,8 +157,15 @@
   }
 
   function startViewer() {
-    process.chdir('viewer/');
-    require('child_process').exec('npm start &');
+    let dir = __dirname;
+
+    try {
+      process.chdir(dir);
+
+      require('child_process').exec('npm start &');
+    } catch(e) {
+      console.log(chalk.red('Something wrong: ', e));
+    }
   }
 
   (function init()  {
@@ -140,7 +174,7 @@
     if (config) {
       runAllTests(config);
     } else {
-      console.log(noConfig);
+      console.log(chalk.red(noConfig));
     }
   })();
 })();

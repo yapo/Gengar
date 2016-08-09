@@ -4,14 +4,18 @@
 const getTests = () => {
   const fs = require('fs');
 
-  const tests = fs.readdirSync('../tests');
-  const images = fs.readdirSync('public/images/');
+  const conf = fs.readdirSync();
+  const TESTSPATH;
+  const IMAGESPATH;
+
+  const tests = fs.readdirSync(TESTSPATH);
+  const images = fs.readdirSync(IMAGESPATH);
 
   const tree = {};
   const testNames = [];
 
   tests.forEach((elem) => {
-    let main = fs.readdirSync('../tests/' + elem);
+    let main = fs.readdirSync(TESTSPATH + elem);
 
     main.forEach((what) => {
       let whatName = what.split('.')[0];

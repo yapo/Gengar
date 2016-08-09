@@ -31,6 +31,7 @@
           this.new = 'images/' + image + '.new.png';
           this.diff = 'images/' + image + '.diff.png';
         },
+
         changeBase: function(queWea) {
           console.log('queWea: ', queWea);
 

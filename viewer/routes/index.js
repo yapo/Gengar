@@ -12,6 +12,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/data', (req, res) => {
+  console.log('hola: ', getTests());
   res.send(getTests());
 });
 

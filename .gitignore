@@ -1,9 +1,9 @@
-
+gengarPath.json
 .DS_Store
 node_modules
 bin/
-viewer/public/images/
 tests/
+images/
 .log
 npm-debug.log
 Gengar.json
