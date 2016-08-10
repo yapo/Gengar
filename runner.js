@@ -162,9 +162,15 @@
     try {
       process.chdir(dir);
 
-      require('child_process').exec('npm start &');
+      let spawn = require('child_process').spawn('./app.sh', [], {
+        detached: true,
+        stdio: ['ignore', 'ignore', 'ignore']
+      });
+
+      spawn.unref();
+
     } catch(e) {
-      console.log(chalk.red('Something wrong: ', e));
+      console.log(chalk.red('Something went wrong while trying to start the viewer: ', e));
     }
   }
 

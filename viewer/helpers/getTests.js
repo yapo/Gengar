@@ -4,9 +4,8 @@
 const getTests = () => {
   const fs = require('fs');
 
-  const conf = fs.readdirSync();
-  const TESTSPATH;
-  const IMAGESPATH;
+  const TESTSPATH = '../tests/';
+  const IMAGESPATH = '../images/';
 
   const tests = fs.readdirSync(TESTSPATH);
   const images = fs.readdirSync(IMAGESPATH);
@@ -52,4 +51,5 @@ const getTests = () => {
 }
 
 module.exports = getTests;
+
 
