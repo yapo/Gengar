@@ -1,6 +1,7 @@
 {
   "name": "Gengar",
-  "version": "0.4.1",
+  "main": "Gengar.js",
+  "version": "0.4.2",
   "description": "Regression testing with Selenium and ImageMagick",
   "scripts": {
     "start": "node ./viewer/bin/www"
@@ -26,6 +27,6 @@
     "morgan": "1.7.0",
     "pug": "^2.0.0-beta4",
     "selenium-webdriver": "^2.53.3",
-    "serve-favicon": ""
+    "serve-favicon": "^2.3.0"
   }
 }
