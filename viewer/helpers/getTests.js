@@ -4,8 +4,10 @@
 const getTests = () => {
   const fs = require('fs');
 
-  const TESTSPATH = '../tests/';
-  const IMAGESPATH = '../images/';
+  const conf = fs.readFileSync('../Gengar.json');
+
+  const TESTSPATH = conf['testsPath'];
+  const IMAGESPATH = conf['imagesPath'];
 
   const tests = fs.readdirSync(TESTSPATH);
   const images = fs.readdirSync(IMAGESPATH);
@@ -46,10 +48,9 @@ const getTests = () => {
       }
     })
   });
-  
+
   return tree;
 }
 
 module.exports = getTests;
-
 

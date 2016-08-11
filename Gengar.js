@@ -68,7 +68,10 @@ module.exports = Gengar = (() => {
    **/
   function Gengar(id, callback) {
     this.id = id;
-    this.driver = new webdriver.Builder().forBrowser('firefox').build();
+    this.driver = new webdriver.Builder()
+      .forBrowser('firefox')
+      .usingServer('http://127.0.0.1:4444/wd/hub')
+      .build();
 
     if (typeof callback === 'function') {
       callback(this, state.bind(this));
