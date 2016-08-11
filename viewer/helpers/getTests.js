@@ -4,7 +4,7 @@
 const getTests = () => {
   const fs = require('fs');
 
-  const conf = fs.readFileSync('../Gengar.json');
+  const conf = JSON.parse(fs.readFileSync('./Gengar.json'));
 
   const TESTSPATH = conf['testsPath'];
   const IMAGESPATH = conf['imagesPath'];

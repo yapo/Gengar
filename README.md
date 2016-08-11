@@ -9,6 +9,11 @@ With Selenium installed, make it run with:
 
 	java -jar selenium-server-standalone-2.45.0.jar
 
+If running headless, you'll need Xvnc or Xbnc. If using Xvnc, you should run:
+
+	export DISPLAY=:$(id -u)
+	nohup Xvnc -ac -SecurityTypes None $DISPLAY & > /dev/null
+
 And then run your tests with:
 
 	node runner.js
@@ -20,14 +25,14 @@ And then run your tests with:
 		-> viewName.view.js
 		-> componentName.component.js
 
-	images/viewName/
+	images/
 		-> viewName.stateName.[base/diff/current].png
 		-> componentName.stateName.[base/diff/current].png
 		-> componentName.stateName.diff
 
 ## Current Test Structure [wip]
 
-	Gengar('viewName', () -> {
+	new Gengar('viewName', (g, state) -> {
 		state('stateName', () -> {
 			// Actions
 		});
@@ -37,11 +42,12 @@ And then run your tests with:
 
 ###Todo:
 	
-	* [x] Add image diffing with ImageMagick
-	* [ ] Add a web interface/viewer to see and manage differences
 	* [ ] Write some nice documentation.
 	* [ ] Improve this readme
-	* [ ] Make everything installable through npm or some other package manager
 	* [ ] Allow for different language "interfaces" (Ruby, Go, Python, whatever)
 
+###Done:
+	* [x] Add image diffing with ImageMagick
+	* [x] Add a web interface/viewer to see and manage differences
+	* [x] Make everything installable through npm or some other package manager
 
