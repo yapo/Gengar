@@ -9,7 +9,7 @@ module.exports = Gengar = (() => {
   const By = webdriver.By;
   const until = webdriver.until;
 
-  const config = JSON.parse(fs.readFileSync('gengar.json'));
+  const config = JSON.parse(fs.readFileSync('Gengar.json'));
 
   const PATH = config['basePath'];
   const IMAGEPATH = config['imagesPath'];
