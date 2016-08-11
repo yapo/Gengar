@@ -1,7 +1,7 @@
 {
   "name": "Gengar",
   "main": "Gengar.js",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Regression testing with Selenium and ImageMagick",
   "scripts": {
     "start": "node ./viewer/bin/www"
